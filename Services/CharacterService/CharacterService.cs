@@ -35,9 +35,9 @@ namespace dotnet_rpg.Services.CharacterService
 
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
-            return new ServiceResponse<List<GetCharacterDto>> 
-            { 
-                Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList() 
+            return new ServiceResponse<List<GetCharacterDto>>
+            {
+                Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList()
             };
         }
 
@@ -47,6 +47,31 @@ namespace dotnet_rpg.Services.CharacterService
             var character = characters.FirstOrDefault(c => c.Id == id);
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
             return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(UpdateCharacterDto updateCharacter)
+        {
+            ServiceResponse<GetCharacterDto> response = new ServiceResponse<GetCharacterDto>();
+            try
+            {
+                Character character = characters.FirstOrDefault(c => c.Id == updateCharacter.Id);
+                _mapper.Map(updateCharacter, character);
+                // character.Name = updateCharacter.Name;
+                // character.HitPoints = updateCharacter.HitPoints;
+                // character.Strength = updateCharacter.Strength;
+                // character.Defense = updateCharacter.Defense;
+                // character.Intelligence = updateCharacter.Intelligence;
+                // character.Class = updateCharacter.Class;
+
+                response.Data = _mapper.Map<GetCharacterDto>(character);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
         }
     }
 }
