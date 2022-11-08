@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using dotnet_rpg.Dtos.Character;
 using dotnet_rpg.Dtos.Weapon;
-using dotnet_rpg.Services.CharacterService.WeaponService;
+using dotnet_rpg.Services.WeaponService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_rpg.Controllers
 {
-    [Route("[controller]")]
-    [ApiController]
     [Authorize]
+    [ApiController]
+    [Route("[controller]")]
     public class WeaponController : ControllerBase
     {
         private readonly IWeaponService _weaponService;
@@ -27,6 +27,5 @@ namespace dotnet_rpg.Controllers
         {
             return Ok(await _weaponService.AddWeapon(newWeapon));
         }
-        
     }
 }

@@ -9,13 +9,13 @@ using dotnet_rpg.Dtos.Character;
 using dotnet_rpg.Dtos.Weapon;
 using Microsoft.EntityFrameworkCore;
 
-namespace dotnet_rpg.Services.CharacterService.WeaponService
+namespace dotnet_rpg.Services.WeaponService
 {
     public class WeaponService : IWeaponService
     {
-        private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly DataContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
         public WeaponService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {

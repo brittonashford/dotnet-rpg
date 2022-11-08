@@ -1,13 +1,13 @@
 global using dotnet_rpg.Models;
-using dotnet_rpg.Services.CharacterService;
-using Microsoft.EntityFrameworkCore;
 using dotnet_rpg.Data;
+using dotnet_rpg.Services.CharacterService;
+using dotnet_rpg.Services.FightService;
+using dotnet_rpg.Services.WeaponService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.AspNetCore.Filters;
 using Microsoft.OpenApi.Models;
-using dotnet_rpg.Services.CharacterService.WeaponService;
-using dotnet_rpg.Services.CharacterService.FightService;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,21 +19,29 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
     c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme {
-        Description = "Standard authorization header using the Bearer scheme, e.g., \"bearer {token} \"",
+        Description = "Standard Authorization header using the Bearer scheme, e.g. \"bearer {token} \"",
         In = ParameterLocation.Header,
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
-    
+
     c.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+
+
+
 builder.Services.AddScoped<ICharacterService, CharacterService>();
+
+
+
+
+
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-builder.Services.AddScoped<IWeaponService, WeaponService>();
-builder.Services.AddScoped<IFightService, FightService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => {
+    .AddJwtBearer(options =>
+    {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
@@ -44,6 +52,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IWeaponService, WeaponService>();
+builder.Services.AddScoped<IFightService, FightService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

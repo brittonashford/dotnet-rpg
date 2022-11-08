@@ -20,6 +20,5 @@ namespace dotnet_rpg.Models
         public int Fights { get; set; }
         public int Victories { get; set; }
         public int Defeats { get; set; }
-
     }
 }

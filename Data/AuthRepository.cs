@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-
 namespace dotnet_rpg.Data
 {
     public class AuthRepository : IAuthRepository
@@ -26,16 +25,16 @@ namespace dotnet_rpg.Data
             var response = new ServiceResponse<string>();
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Username.ToLower().Equals(username.ToLower()));
-            
-            if(user == null)
+
+            if (user == null)
             {
                 response.Success = false;
-                response.Message = "Invalid username or password.";
+                response.Message = "User not found.";
             }
             else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             {
                 response.Success = false;
-                response.Message = "Hmmm. Those credentials don't look right.";
+                response.Message = "Wrong password.";
             }
             else
             {
@@ -48,7 +47,7 @@ namespace dotnet_rpg.Data
         public async Task<ServiceResponse<int>> Register(User user, string password)
         {
             ServiceResponse<int> response = new ServiceResponse<int>();
-            if(await UserExists(user.Username))
+            if (await UserExists(user.Username))
             {
                 response.Success = false;
                 response.Message = "User already exists.";
@@ -62,15 +61,13 @@ namespace dotnet_rpg.Data
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            
             response.Data = user.Id;
-
             return response;
         }
 
         public async Task<bool> UserExists(string username)
         {
-            if(await _context.Users.AnyAsync(u => u.Username.ToLower() == username.ToLower()))
+            if (await _context.Users.AnyAsync(u => u.Username.ToLower() == username.ToLower()))
             {
                 return true;
             }
@@ -90,8 +87,8 @@ namespace dotnet_rpg.Data
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
             {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                return computedHash.SequenceEqual(passwordHash);
+                var computeHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                return computeHash.SequenceEqual(passwordHash);
             }
         }
 
@@ -99,12 +96,12 @@ namespace dotnet_rpg.Data
         {
             List<Claim> claims = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)              
+                new Claim(ClaimTypes.Name, user.Username)
             };
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
                 .GetBytes(_configuration.GetSection("AppSettings:Token").Value));
-            
+
             SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
